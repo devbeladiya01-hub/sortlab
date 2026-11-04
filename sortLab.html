@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <title>SortLab – Bubble &amp; Selection Sort Visualizer</title>
+   <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+   <style>
+      :root {
+         box-sizing: border-box;
+         padding-top: env(safe-area-inset-top, 0px);
+         padding-bottom: env(safe-area-inset-bottom, 0px);
+         --bg: #eef1f8;
+         --card: #fff;
+         --ink: #10142b;
+         --mute: #5d6684;
+         --line: #dde2f0;
+         --a: #3547ff;
+         --a2: #8a46ff;
+         --bar: #7d8cff;
+         --cmp: #f5a524;
+         --swp: #ee3f66;
+         --ok: #10b981;
+         --t: 300ms;
+         color-scheme: light
+      }
+
+      @media(prefers-color-scheme:dark) {
+         :root:not([data-theme="light"]) {
+            --bg: #0a0d1b;
+            --card: #121631;
+            --ink: #eef0ff;
+            --mute: #98a0c8;
+            --line: #232850;
+            --a: #7280ff;
+            --a2: #b38cff;
+            --bar: #4655d6;
+            color-scheme: dark
+         }
+      }
+
+      :root[data-theme="dark"] {
+         --bg: #0a0d1b;
+         --card: #121631;
+         --ink: #eef0ff;
+         --mute: #98a0c8;
+         --line: #232850;
+         --a: #7280ff;
+         --a2: #b38cff;
+         --bar: #4655d6;
+         color-scheme: dark
+      }
+
+      html {
+         scroll-padding-top: env(safe-area-inset-top, 0px)
+      }
+
+      *,
+      *::before,
+      *::after {
+         box-sizing: border-box
+      }
+
+      body {
+         margin: 0;
+         background: var(--bg);
+         color: var(--ink);
+         font: 400 15px/1.45 "Bricolage Grotesque", system-ui, sans-serif
+      }
+
+      .wrap {
+         max-width: 1180px;
+         margin: 0 auto;
+         padding: 18px 16px 40px
+      }
+
+      header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         gap: 12px;
+         margin-bottom: 16px
+      }
+
+      .brand {
+         display: flex;
+         gap: 12px;
+         align-items: center
+      }
+
+      h1 {
+         font-size: 28px;
+         line-height: 1;
+         margin: 0;
+         font-weight: 800;
+         letter-spacing: -.02em
+      }
+
+      .brand p {
+         margin: 3px 0 0;
+         color: var(--mute);
+         font-size: 14px
+      }
+
+      h3 {
+         margin: 0 0 2px;
+         font-size: 16px;
+         font-weight: 700
+      }
+
+      .sub {
+         margin: 0 0 10px;
+         color: var(--mute);
+         font-size: 13px
+      }
+
+      .card {
+         background: var(--card);
+         border: 1px solid var(--line);
+         border-radius: 12px;
+         padding: 16px
+      }
+
+      .big {
+         border-radius: 20px;
+         padding: 18px
+      }
+
+      .row {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 14px 18px;
+         align-items: flex-end
+      }
+
+      .f {
+         display: flex;
+         flex-direction: column;
+         gap: 6px
+      }
+
+      .grow {
+         flex: 1;
+         min-width: 200px
+      }
+
+      .f>span {
+         font-size: 12.5px;
+         font-weight: 600;
+         color: var(--mute)
+      }
+
+      input,
+      select,
+      button {
+         font: inherit;
+         color: inherit
+      }
+
+      input[type=number],
+      input[type=text],
+      select {
+         background: var(--bg);
+         border: 1px solid var(--line);
+         border-radius: 9px;
+         padding: 8px 10px;
+         outline: none;
+         min-width: 0
+      }
+
+      input[type=number] {
+         width: 70px
+      }
+
+      input:focus-visible,
+      select:focus-visible,
+      button:focus-visible {
+         outline: 2px solid var(--a);
+         outline-offset: 2px
+      }
+
+      input[type=range] {
+         accent-color: var(--a);
+         cursor: pointer
+      }
+
+      .nn {
+         display: flex;
+         gap: 8px;
+         align-items: center
+      }
+
+      .nn input[type=text] {
+         flex: 1
+      }
+
+      .seg {
+         display: inline-flex;
+         background: var(--bg);
+         border: 1px solid var(--line);
+         border-radius: 10px;
+         padding: 3px
+      }
+
+      .seg button {
+         border: 0;
+         background: none;
+         padding: 6px 12px;
+         border-radius: 7px;
+         cursor: pointer;
+         font-weight: 600;
+         color: var(--mute)
+      }
+
+      .seg button.on {
+         background: var(--a);
+         color: #fff
+      }
+
+      .btn {
+         border: 1px solid var(--line);
+         background: var(--card);
+         border-radius: 10px;
+         padding: 8px 14px;
+         cursor: pointer;
+         font-weight: 600
+      }
+
+      .btn:hover {
+         border-color: var(--a)
+      }
+
+      .btn.p {
+         background: var(--a);
+         border-color: var(--a);
+         color: #fff;
+         min-width: 96px
+      }
+
+      .chk {
+         display: flex;
+         gap: 6px;
+         align-items: center;
+         font-weight: 600;
+         padding-bottom: 8px;
+         cursor: pointer
+      }
+
+      .err {
+         color: var(--swp);
+         font-size: 13px;
+         min-height: 0;
+         margin-top: 6px
+      }
+
+      .err:empty {
+         display: none
+      }
+
+      .main {
+         display: grid;
+         grid-template-columns: minmax(0, 1fr) 300px;
+         gap: 16px;
+         margin-top: 16px
+      }
+
+      .stats {
+         display: grid;
+         grid-template-columns: repeat(4, 1fr);
+         gap: 10px
+      }
+
+      .st {
+         border-left: 3px solid var(--line);
+         padding: 2px 0 2px 10px
+      }
+
+      .st b {
+         display: block;
+         font: 700 24px/1.1 "JetBrains Mono", monospace
+      }
+
+      .st span {
+         font-size: 12.5px;
+         color: var(--mute)
+      }
+
+      .st:nth-child(1) {
+         border-color: var(--cmp)
+      }
+
+      .st:nth-child(2) {
+         border-color: var(--swp)
+      }
+
+      .st:nth-child(3) {
+         border-color: var(--a2)
+      }
+
+      .st:nth-child(4) {
+         border-color: var(--a)
+      }
+
+      .stage {
+         position: relative;
+         height: 290px;
+         margin: 16px 0 36px;
+         --slot: 40px;
+         --d: 36px;
+         border-bottom: 2px solid var(--ink);
+         background: linear-gradient(var(--line) 1px, transparent 1px) 0 0/100% 29px
+      }
+
+      .it {
+         --k: var(--bar);
+         position: absolute;
+         left: 0;
+         bottom: 0;
+         width: calc(var(--slot) - 5px);
+         margin-left: 2.5px;
+         display: flex;
+         justify-content: center;
+         align-items: flex-start;
+         padding-top: 6px;
+         background-color: var(--k);
+         border-radius: 7px 7px 2px 2px;
+         color: #fff;
+         font: 700 13px/1 "JetBrains Mono", monospace;
+         box-shadow: inset 0 -16px 18px -12px rgba(0, 0, 0, .35);
+         transition: transform var(--t) cubic-bezier(.45, .05, .2, 1), background-color .2s
+      }
+
+      .it.cmp {
+         --k: var(--cmp)
+      }
+
+      .it.swp {
+         --k: var(--swp);
+         z-index: 2;
+         box-shadow: 0 8px 18px -6px var(--swp)
+      }
+
+      .it.min {
+         --k: var(--a2)
+      }
+
+      .it.done {
+         --k: var(--ok)
+      }
+
+      .it[data-p]::after {
+         content: attr(data-p);
+         position: absolute;
+         top: 100%;
+         margin-top: 6px;
+         font: 700 11px "JetBrains Mono", monospace;
+         color: var(--ink);
+         white-space: nowrap
+      }
+
+      .sm .it {
+         font-size: 10px
+      }
+
+      .tiny .it span,
+      .tiny .it::after {
+         display: none
+      }
+
+      .msg {
+         display: flex;
+         gap: 10px;
+         align-items: center;
+         background: var(--bg);
+         border-radius: 10px;
+         padding: 10px 14px;
+         min-height: 46px
+      }
+
+      .dot {
+         width: 10px;
+         height: 10px;
+         border-radius: 50%;
+         background: var(--mute);
+         flex: none
+      }
+
+      .dot.cmp {
+         background: var(--cmp)
+      }
+
+      .dot.swp {
+         background: var(--swp)
+      }
+
+      .dot.done {
+         background: var(--ok)
+      }
+
+      .tr {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+         align-items: center;
+         margin-top: 12px
+      }
+
+      .spd {
+         margin-left: auto;
+         display: flex;
+         gap: 8px;
+         align-items: center;
+         color: var(--mute);
+         font-weight: 600
+      }
+
+      .scr {
+         width: 100%;
+         margin: 12px 0 0
+      }
+
+      .cl {
+         padding: 4px 10px;
+         border-radius: 7px;
+         font: 500 13px "JetBrains Mono", monospace;
+         white-space: pre;
+         border-left: 3px solid transparent
+      }
+
+      .cl.on {
+         background: color-mix(in srgb, var(--a) 14%, transparent);
+         border-color: var(--a);
+         font-weight: 700
+      }
+
+      .lgd {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 6px 14px;
+         margin-top: 10px;
+         font-size: 13px;
+         color: var(--mute)
+      }
+
+      .lgd i {
+         display: inline-block;
+         width: 11px;
+         height: 11px;
+         border-radius: 3px;
+         margin-right: 6px;
+         vertical-align: -1px;
+         background: var(--k)
+      }
+
+      .charts {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+         gap: 16px;
+         margin-top: 16px
+      }
+
+      .c {
+         --k: var(--cmp)
+      }
+
+      .s {
+         --k: var(--swp)
+      }
+
+      svg {
+         width: 100%;
+         height: auto;
+         display: block
+      }
+
+      svg text {
+         fill: var(--mute);
+         font: 500 8px "JetBrains Mono", monospace
+      }
+
+      svg line {
+         stroke: var(--line)
+      }
+
+      polyline {
+         fill: none;
+         stroke: var(--k);
+         stroke-linejoin: round
+      }
+
+      .gh {
+         stroke-width: 1.4;
+         opacity: .3
+      }
+
+      .ln {
+         stroke-width: 2.2
+      }
+
+      circle {
+         fill: var(--k);
+         stroke: var(--card);
+         stroke-width: 1.5
+      }
+
+      .pcs {
+         display: flex;
+         align-items: flex-end;
+         gap: 3px;
+         height: 140px;
+         border-bottom: 2px solid var(--ink)
+      }
+
+      .pc {
+         flex: 1;
+         height: 100%;
+         display: flex;
+         align-items: flex-end;
+         gap: 1px;
+         opacity: .9
+      }
+
+      .pc.fut {
+         opacity: .22
+      }
+
+      .pc.cur {
+         opacity: 1;
+         outline: 2px solid var(--a);
+         outline-offset: 1px;
+         border-radius: 2px
+      }
+
+      .pc i {
+         flex: 1;
+         background: var(--k);
+         border-radius: 2px 2px 0 0;
+         min-height: 2px
+      }
+
+      .charts h4 {
+         margin: 10px 0 4px;
+         font-size: 13px;
+         color: var(--mute)
+      }
+
+      .br {
+         display: grid;
+         grid-template-columns: 70px 1fr 44px;
+         gap: 8px;
+         align-items: center;
+         margin: 4px 0
+      }
+
+      .br em {
+         font-style: normal;
+         text-transform: capitalize;
+         font-weight: 600
+      }
+
+      .br code {
+         font: 700 13px "JetBrains Mono", monospace;
+         text-align: right
+      }
+
+      .tk {
+         height: 14px;
+         background: var(--bg);
+         border-radius: 4px;
+         overflow: hidden
+      }
+
+      .fl {
+         height: 100%;
+         border-radius: 4px;
+         transition: width .4s
+      }
+
+      .fl.bubble {
+         background: var(--a)
+      }
+
+      .fl.selection {
+         background: var(--a2)
+      }
+
+      table {
+         width: 100%;
+         border-collapse: collapse;
+         font-size: 14px
+      }
+
+      th,
+      td {
+         text-align: left;
+         padding: 7px 8px;
+         border-bottom: 1px solid var(--line)
+      }
+
+      th {
+         font-weight: 700
+      }
+
+      td:first-child {
+         color: var(--mute)
+      }
+
+      #tbl[data-a=bubble] :is(th, td):nth-child(2),
+      #tbl[data-a=selection] :is(th, td):nth-child(3) {
+         background: color-mix(in srgb, var(--a) 10%, transparent);
+         font-weight: 700
+      }
+
+      @media(max-width:900px) {
+         .main {
+            grid-template-columns: 1fr
+         }
+      }
+
+      @media(max-width:560px) {
+         .stats {
+            grid-template-columns: repeat(2, 1fr)
+         }
+
+         .stage {
+            height: 230px
+         }
+
+         .spd {
+            margin-left: 0
+         }
+      }
+
+      @media(prefers-reduced-motion:reduce) {
+         .it {
+            transition-duration: .01ms
+         }
+      }
+   </style>
+</head>
+
+<body>
+   <div class="wrap">
+      <header>
+         <div class="brand">
+            <svg width="38" height="38" viewBox="0 0 28 28" aria-hidden="true">
+               <rect x="2" y="14" width="5" height="12" rx="1.5" fill="var(--bar)" />
+               <rect x="9" y="6" width="5" height="20" rx="1.5" fill="var(--swp)" />
+               <rect x="16" y="10" width="5" height="16" rx="1.5" fill="var(--cmp)" />
+               <rect x="23" y="2" width="4" height="24" rx="1.5" fill="var(--ok)" />
+            </svg>
+            <div>
+               <h1>SortLab</h1>
+               <p>Bubble and selection sort, step by step</p>
+            </div>
+         </div>
+         <button class="btn" id="theme">Light / dark</button>
+      </header>
+
+      <section class="card">
+         <div class="row">
+            <div class="f"><span>Algorithm</span>
+               <div class="seg" id="sA"><button data-v="bubble" class="on">Bubble sort</button><button
+                     data-v="selection">Selection sort</button></div>
+            </div>
+            <div class="f"><span>Number of elements (2–60)</span>
+               <div class="nn"><input type="number" id="n" min="2" max="60" value="14"><input type="range" id="nr"
+                     min="2" max="60" value="14"></div>
+            </div>
+            <div class="f"><span>Data set</span><select id="pre">
+                  <option value="random">Random</option>
+                  <option value="nearly">Nearly sorted</option>
+                  <option value="best">Best case (already in order)</option>
+                  <option value="worst">Worst case (reversed)</option>
+                  <option value="unique">Few unique values</option>
+                  <option value="custom" hidden>Custom input</option>
+               </select></div>
+            <div class="f grow"><span>Your own values</span>
+               <div class="nn"><input type="text" id="cus" placeholder="e.g. 42, 7, 19, 88, 3"><button class="btn"
+                     id="app">Apply</button></div>
+            </div>
+            <div class="f"><span>Order</span>
+               <div class="seg" id="sO"><button data-v="asc" class="on">Ascending</button><button
+                     data-v="desc">Descending</button></div>
+            </div>
+            <button class="btn" id="gen">New data</button>
+         </div>
+         <div class="err" id="err"></div>
+      </section>
+
+      <div class="main">
+         <section class="card big">
+            <div class="stats">
+               <div class="st"><b id="vC">0</b><span>Comparisons</span></div>
+               <div class="st"><b id="vS">0</b><span>Swaps</span></div>
+               <div class="st"><b id="vP">0</b><span>Pass</span></div>
+               <div class="st"><b id="vT">0</b><span>Step</span></div>
+            </div>
+            <div class="stage" id="stage"></div>
+            <div class="msg"><span class="dot" id="dot"></span><span id="msg"></span></div>
+            <div class="tr">
+               <button class="btn" id="rst" title="Back to start">Reset</button>
+               <button class="btn" id="prev" title="Step back (left arrow)">Back</button>
+               <button class="btn p" id="play" title="Space">Play</button>
+               <button class="btn" id="next" title="Step forward (right arrow)">Step</button>
+               <label class="spd">Speed <input type="range" id="spd" min="1" max="10" value="5"></label>
+            </div>
+            <input type="range" class="scr" id="scr" min="0" max="0" value="0" aria-label="Scrub through steps">
+         </section>
+         <aside class="card">
+            <h3>Pseudocode</h3>
+            <p class="sub">The highlighted line is running now.</p>
+            <div id="code"></div>
+            <div class="lgd">
+               <span style="--k:var(--bar)"><i></i>Unsorted</span><span
+                  style="--k:var(--cmp)"><i></i>Comparing</span><span style="--k:var(--swp)"><i></i>Swapping</span><span
+                  style="--k:var(--a2)"><i></i>Current extreme</span><span style="--k:var(--ok)"><i></i>Sorted</span>
+            </div>
+            <p class="sub" style="margin-top:14px">Keys: space plays or pauses, left and right arrows step.</p>
+         </aside>
+      </div>
+
+      <section class="card" style="margin-top:16px">
+         <h3>Time complexity</h3>
+         <p class="sub">Best, average and worst cases for each sorting algorithm.</p>
+         <table>
+            <thead><tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th></tr></thead>
+            <tbody>
+               <tr><td>Bubble sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td></tr>
+               <tr><td>Selection sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td></tr>
+            </tbody>
+         </table>
+      </section>
+
+   </div>
+
+   <script>
+      const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+      const S = { algo: 'bubble', asc: true, opt: false, pre: 'random', vals: [], F: [], P: [], els: [], idx: 0, on: false, t: 0, slot: 40, lp: -1 };
+      const CODE = {
+         bubble: a => [
+            'for (i = 0; i < n - 1; i++)\n{',
+            '    for (j = 0; j < n - i - 1; j++)\n    {',
+            `        if (A[j] ${a ? '>' : '<'} A[j + 1])\n        {`,
+            '            swap(A[j], A[j + 1]);\n        }\n    }\n}'
+         ],
+         selection: a => [
+            'for (i = 0; i < n - 1; i++)\n{',
+            `    ${a ? 'min' : 'max'} = i;`,
+            '    for (j = i + 1; j < n; j++)\n    {',
+            `        if (A[j] ${a ? '<' : '>'} A[${a ? 'min' : 'max'}])\n        {\n            ${a ? 'min' : 'max'} = j;\n        }\n    }`,
+            `    if (${a ? 'min' : 'max'} != i)\n    {\n        swap(A[i], A[${a ? 'min' : 'max'}]);\n    }\n}`
+         ]
+      };
+
+      /* Build every step of the sort up front, so playback can go forward, back or jump. */
+      function run(algo, vals, asc, opt) {
+         const n = vals.length, o = vals.map((_, i) => i), F = [], P = [], V = i => vals[o[i]], ext = asc ? 'minimum' : 'maximum';
+         let nc = 0, ns = 0, ps = 0;
+         const push = f => F.push({ o: o.slice(), nc, ns, ps, sc: 0, ...f }), bad = (x, y) => asc ? x > y : x < y;
+         push({ ln: -1, msg: 'Ready. Press Play, or step through one operation at a time.' });
+         if (algo === 'bubble') {
+            for (let i = 0; i < n - 1; i++) {
+               let sw = false; ps = i + 1; P.push({ c: 0, s: 0 });
+               for (let j = 0; j < n - i - 1; j++) {
+                  nc++; P[i].c++;
+                  const b = bad(V(j), V(j + 1)), p = [[j, 'j'], [j + 1, 'j+1']];
+                  push({ ln: 2, sc: i, c: [j, j + 1], p, msg: `Compare ${V(j)} and ${V(j + 1)}: ${b ? 'out of order, so swap them' : 'already in order'}` });
+                  if (b) { [o[j], o[j + 1]] = [o[j + 1], o[j]]; ns++; P[i].s++; sw = true; push({ ln: 3, sc: i, s: [j, j + 1], p, msg: `Swapped positions ${j} and ${j + 1}` }) }
+               }
+               if (opt && !sw) { push({ ln: 4, sc: n, msg: 'No swaps in this pass, so the array is sorted. Stopping early.' }); break }
+            }
+         } else {
+            for (let i = 0; i < n - 1; i++) {
+               P.push({ c: 0, s: 0 }); ps = i + 1; let m = i;
+               const pt = j => [[i, 'i'], [m, asc ? 'min' : 'max'], ...(j == null ? [] : [[j, 'j']])];
+               push({ ln: 1, sc: i, m, p: pt(), msg: `Pass ${ps}: assume ${V(i)} at position ${i} is the ${ext}` });
+               for (let j = i + 1; j < n; j++) {
+                  nc++; P[i].c++;
+                  const b = asc ? V(j) < V(m) : V(j) > V(m);
+                  push({ ln: 3, sc: i, m, c: [j, m], p: pt(j), msg: `Compare ${V(j)} with the current ${ext} ${V(m)}: ${b ? 'new ' + ext + ' found' : 'keep current'}` });
+                  if (b) m = j;
+               }
+               if (m !== i) { [o[i], o[m]] = [o[m], o[i]]; ns++; P[i].s++; push({ ln: 4, sc: i, s: [i, m], p: [[i, 'i'], [m, asc ? 'min' : 'max']], msg: `Swap positions ${i} and ${m}: ${V(i)} is now in its final place` }) }
+               else push({ ln: 4, sc: i, m, p: pt(), msg: `${V(i)} is already in its final place, no swap needed` });
+            }
+         }
+         push({ ln: -1, sc: n, msg: `Sorted. ${nc} comparisons and ${ns} swaps in total.` });
+         return { F, P };
+      }
+
+      function gen(n, p, asc) {
+         let a = Array.from({ length: n }, () => 5 + Math.floor(Math.random() * 95));
+         if (p === 'unique') a = a.map(() => [15, 40, 65, 90][Math.random() * 4 | 0]);
+         if (['best', 'worst', 'nearly'].includes(p)) {
+            a = Array.from({ length: n }, (_, i) => 5 + Math.round(i * 94 / Math.max(1, n - 1)));
+            if ((p === 'worst') === asc) a.reverse();
+            if (p === 'nearly') for (let k = Math.max(1, Math.round(n * .12)); k--;) { const i = Math.random() * (n - 1) | 0, j = Math.min(n - 1, i + 1 + (Math.random() * 3 | 0));[a[i], a[j]] = [a[j], a[i]] }
+         }
+         return a;
+      }
+
+      function mount() {
+         const st = $('#stage'), mn = Math.min(...S.vals), mx = Math.max(...S.vals);
+         st.innerHTML = '';
+         S.els = S.vals.map(v => { const e = document.createElement('div'); e.className = 'it'; e.style.height = (14 + 86 * (v - mn) / ((mx - mn) || 1)) + '%'; e.innerHTML = `<span>${v}</span>`; st.appendChild(e); return e });
+         layout();
+      }
+      function layout() {
+         const st = $('#stage'), n = S.vals.length, slot = st.clientWidth / n;
+         S.slot = slot; st.style.setProperty('--slot', slot + 'px'); st.style.setProperty('--d', Math.min(slot - 6, 52) + 'px');
+         st.className = 'stage ' + (slot < 26 ? 'tiny ' : '') + (slot < 40 ? 'sm' : '');
+         if (S.F.length) draw();
+      }
+
+      function build() {
+         const other = S.algo === 'bubble' ? 'selection' : 'bubble', a = run(S.algo, S.vals, S.asc, S.opt), b = run(other, S.vals, S.asc, S.opt);
+         S.F = a.F; S.P = a.P; S.T = { [S.algo]: a.F[a.F.length - 1], [other]: b.F[b.F.length - 1] }; S.idx = 0;
+         stop();
+         $('#code').innerHTML = CODE[S.algo](S.asc).map(l => `<div class="cl">${l.replace(/</g, '&lt;')}</div>`).join('');
+         $('#scr').max = S.F.length - 1;
+         draw();
+      }
+
+      function draw() {
+         const f = S.F[S.idx], n = S.vals.length, bub = S.algo === 'bubble', lab = {};
+         (f.p || []).forEach(([p, t]) => lab[p] = lab[p] ? lab[p] + ',' + t : t);
+         f.o.forEach((id, pos) => {
+            const e = S.els[id], done = bub ? pos >= n - f.sc : pos < f.sc;
+            const c = f.s && f.s.includes(pos) ? ' swp' : f.c && f.c.includes(pos) ? ' cmp' : pos === f.m ? ' min' : done ? ' done' : '';
+            e.className = 'it' + c; e.style.transform = `translateX(${pos * S.slot}px)`;
+            lab[pos] ? e.dataset.p = lab[pos] : e.removeAttribute('data-p');
+         });
+         $('#vC').textContent = f.nc; $('#vS').textContent = f.ns; $('#vP').textContent = f.ps + '/' + S.P.length; $('#vT').textContent = S.idx + '/' + (S.F.length - 1);
+         $('#msg').textContent = f.msg; $('#dot').className = 'dot ' + (f.s ? 'swp' : f.c ? 'cmp' : f.sc === n ? 'done' : '');
+         $$('.cl').forEach((e, i) => e.classList.toggle('on', i === f.ln));
+         $('#scr').value = S.idx;
+      }
+
+      function stop() { S.on = false; clearTimeout(S.t); $('#play').textContent = 'Play' }
+      function play() {
+         if (S.idx >= S.F.length - 1) { S.idx = 0; draw() }
+         S.on = true; $('#play').textContent = 'Pause'; tick();
+      }
+      function tick() {
+         if (!S.on) return;
+         const s = +$('#spd').value, k = s > 7 ? 2 ** (s - 7) : 1, ms = s > 7 ? 30 : Math.round(1200 / 1.5 ** (s - 1));
+         document.documentElement.style.setProperty('--t', (k > 1 ? 30 : Math.min(ms * .85, 420)) + 'ms');
+         S.idx = Math.min(S.idx + k, S.F.length - 1); draw();
+         if (S.idx >= S.F.length - 1) { stop(); return }
+         S.t = setTimeout(tick, ms);
+      }
+      function step(d) { stop(); document.documentElement.style.setProperty('--t', '300ms'); S.idx = Math.max(0, Math.min(S.F.length - 1, S.idx + d)); draw() }
+
+      function setData(v) { S.vals = v; S.F = []; mount(); build() }
+      function newData() { const n = Math.min(60, Math.max(2, Math.round(+$('#n').value) || 14)); $('#n').value = $('#nr').value = n; setData(gen(n, S.pre, S.asc)) }
+      function seg(id, cb) { const w = $(id); w.onclick = e => { const b = e.target.closest('button'); if (!b) return; $$(id + ' button').forEach(x => x.classList.toggle('on', x === b)); cb(b.dataset.v) } }
+
+      seg('#sA', v => { S.algo = v; build() });
+      seg('#sO', v => { S.asc = v === 'asc';['best', 'worst', 'nearly'].includes(S.pre) ? newData() : build() });
+      $('#n').onchange = newData;
+      $('#nr').oninput = e => { $('#n').value = e.target.value; newData() };
+      $('#pre').onchange = e => { S.pre = e.target.value; newData() };
+      $('#gen').onclick = () => { if (S.pre === 'custom') { S.pre = 'random'; $('#pre').value = 'random' } newData() };
+      $('#app').onclick = () => {
+         const t = $('#cus').value.trim().split(/[\s,;]+/).filter(Boolean).map(Number);
+         if (t.length < 2 || t.length > 60 || t.some(x => !isFinite(x))) { $('#err').textContent = 'Enter between 2 and 60 numbers, separated by commas or spaces.'; return }
+         $('#err').textContent = ''; S.pre = 'custom'; $('#pre').value = 'custom'; $('#n').value = $('#nr').value = t.length; setData(t);
+      };
+      $('#cus').onkeydown = e => { if (e.key === 'Enter') $('#app').click() };
+      $('#play').onclick = () => S.on ? stop() : play();
+      $('#next').onclick = () => step(1); $('#prev').onclick = () => step(-1);
+      $('#rst').onclick = () => { stop(); S.idx = 0; draw() };
+      $('#scr').oninput = e => { stop(); S.idx = +e.target.value; draw() };
+      $('#theme').onclick = () => { const r = document.documentElement, dk = (r.dataset.theme || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')) === 'dark'; r.dataset.theme = dk ? 'light' : 'dark' };
+      addEventListener('keydown', e => {
+         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+         if (e.key === ' ' && e.target.tagName !== 'BUTTON') { e.preventDefault(); $('#play').click() }
+         if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);
+      });
+      if (window.ResizeObserver) new ResizeObserver(layout).observe($('#stage'));
+      newData();
+   </script>
+</body>
+
+</html>
